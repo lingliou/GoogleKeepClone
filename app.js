@@ -1,6 +1,6 @@
 class App {
-  constructor() {
-    this.notes = []; //store user notes as array
+    constructor() {
+        this.notes = []; //store user notes as array
 
 
     //dom element indicated start with $
@@ -10,32 +10,46 @@ class App {
     this.$noteTitle = document.querySelector('#note-title');
     this.$noteText = document.querySelector('#note-text');
     this.$formButtons = document.querySelector('#form-buttons');
+    this.$formCloseButton = document.querySelector('#form-close-button');
 
     this.addEventListeners();
   }
 
   addEventListeners() {
     document.body.addEventListener('click', event => {
-      this.handleFormClick(event);
+        this.handleFormClick(event);
     });
 
     this.$form.addEventListener('submit', event => {
-      event.preventDefault();
-      const title = this.$noteTitle.value;
-      const text = this.$noteText.value;
+        event.preventDefault();
+        const title = this.$noteTitle.value;
+        const text = this.$noteText.value;
+        const hasNote = title || text;
 
-      if (title || text) {
-        this.addNote({ text, title });
-      }
+        if (hasNote) {
+            this.addNote({ text, title });
+        }
     });
+
+    this.$formCloseButton.addEventListener('click', event =>{
+        event.stopPropagation();
+        this.closeForm();
+    })
   }
 
   handleFormClick(event) {
     const isFormClicked = this.$form.contains(event.target);
+    const title = this.$noteTitle.value;
+    const text = this.$noteText.value;
+    const hasNote = title || text;
 
     if (isFormClicked) {
       this.openForm();
-    } else {
+    }
+    else if(hasNote){
+        this.addNote({text, title});
+    }
+    else {
       this.closeForm();
     }
   }
@@ -54,10 +68,10 @@ class App {
     this.$noteTitle.value = '';
   }
 
-  addNote(note) {
+  addNote({text, title}) {
     const newNote = {
-      title: note.title,
-      text: note.text,
+      title,
+      text,
       color: "white",
       id: this.notes.length > 0 ?
         this.notes[this.notes.length - 1].id + 1 :
