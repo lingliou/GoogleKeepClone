@@ -1,6 +1,7 @@
 class App {
     constructor() {
-        this.notes = []; //store user notes as array
+        this.notes = JSON.parse(localStorage.getItem('notes')) || []; 
+        //if localStorage has notes it will show, otherwise it's a empty array
         this.title = ''; //in selectNote methode will update this varibels
         this.text ='';   //so it can be used globally
         this.id ='';
@@ -19,6 +20,7 @@ class App {
     this.$modalCloseButton = document.querySelector('.modal-close-button');
     this.$colorTooltip = document.querySelector('#color-tooltip');
 
+    this.render();
     this.addEventListeners();
   }
 
@@ -148,7 +150,7 @@ class App {
         1
     };
     this.notes = [...this.notes, newNote];
-    this.displayNotes();
+    this.render();
     this.closeForm();
   }
 
@@ -158,7 +160,7 @@ class App {
       this.notes = this.notes.map( note => 
           note.id === Number(this.id) ? {...note, title, text} : note
       );
-      this.displayNotes();
+      this.render();
       
   }
 
@@ -166,7 +168,7 @@ class App {
     this.notes = this.notes.map(note =>
         note.id === Number(this.id) ? {...note, color} : note
     );
-    this.displayNotes();
+    this.render();
   }
 
   selectNote(event){
@@ -183,7 +185,17 @@ class App {
       if(!event.target.matches('.toolbar-delete')) return;
       const id = event.target.dataset.id;
       this.notes = this.notes.filter(note => note.id !== Number(id));
+      this.render();
+  }
+
+  render(){
+      this.saveNotes();
       this.displayNotes();
+  }
+
+  saveNotes(){
+      localStorage.setItem('notes', JSON.stringify(this.notes)) 
+      //setItem need take a key & value pair and the value must be a string
   }
 
   displayNotes() {
